@@ -172,10 +172,14 @@
 (function(){
 
   /* ══════════════════════════════════════════════
-     대기열. 맨 뒤 칸에 폴더 이름을 적으면
-     그 폴더의 index.html 을 불러와 팝업에 띄웁니다.
+     대기열.
+     [JOB 001] 번호는 배열 순서대로 자동으로 붙습니다.
+     줄을 끼워 넣거나 지우면 아래 번호도 알아서 다시 매겨집니다.
 
-       literacy  →  literacy/index.html
+     칸 순서
+       0 이름   1 상태   2 줄 스타일(''|'wait')
+       3 폴더 이름(선택) — 적으면 그 폴더의 index.html 을 팝업에 띄웁니다
+       4 번호 직접 지정(선택) — 순서를 무시하고 이 번호를 씁니다
 
      저장소 구조
        index.html
@@ -185,18 +189,26 @@
          assets/*.jpg, *.mp4
      ══════════════════════════════════════════════ */
   var jobs = [
-    ["JOB 001","2020년 한국신용정보원 - 기술신용평가 시스템","END","",""],
-    ["JOB 002","2021년 한국신용정보원 - 기술신용평가 시스템","END","",""],
-    ["JOB 003","2022년 한국신용정보원 - 기술신용평가 시스템","END","",""],
-    ["JOB 004","2023년 한국신용정보원 - 기술신용평가 시스템","END","",""],
-    ["JOB 005","2025년 한국신용정보원 - 기술신용평가 차세대","END","",""],
-    ["JOB 006","2025년 한국신용정보원 - 기술신용평가 - 이행실태조사","END","",""],
-    ["JOB 007","2026년 한국신용정보원 - 기술신용평가 - 소상공인 성장모형","RUNNING","",""],
-    ["JOB 008","2026년 한국신용정보원 - 기술신용평가 - 기술력 성장모형","RUNNING","",""],
-    ["JOB 009","홀덤 RFID카드 방송 솔루션","RUNNING","",""],
-    ["JOB 010","디지털 문해 프로그램","RUNNING","","literacy"],
-    ["JOB 999","홈페이지 제작","PENDING","wait",""]
+    ["2015년 특허등록 - 갱신형 인증정보를 이용한 사용자 인증방법 및 시스템","END"],
+    ["2019년 특허등록 - 무선통신 기반 오프라인 게임 진행 검증 시스템 및 방법","END"],
+    ["2020년 한국신용정보원 - 기술신용평가 시스템" ,"END"],
+    ["2021년 한국신용정보원 - 기술신용평가 시스템","END"],
+    ["2022년 한국신용정보원 - 기술신용평가 시스템","END"],
+    ["2023년 한국신용정보원 - 기술신용평가 시스템","END"],
+    ["2025년 한국신용정보원 - 기술신용평가 차세대","END"],
+    ["2025년 한국신용정보원 - 기술신용평가 - 이행실태조사","END"],
+    ["2025년 지멘스 멘딕스 개발툴 플러그인 - 메타서비스","END", "mendix-meta"],
+    ["2026년 한국신용정보원 - 기술신용평가 - 소상공인 성장모형","RUNNING"],
+    ["2026년 한국신용정보원 - 기술신용평가 - 기술력 성장모형","RUNNING"],
+    ["홀덤 RFID카드 방송 솔루션","RUNNING"],
+    ["디지털 문해 프로그램","RUNNING","","literacy"],
+    ["홈페이지 제작","PENDING","wait","","999"]
   ];
+
+  /* 번호 만들기 — 4번 칸이 있으면 그걸 쓰고, 없으면 순서대로 */
+  function jobNo(j, i){
+    return 'JOB ' + (j[4] || String(i + 1).padStart(3, '0'));
+  }
 
   /* ── 대기열 렌더 ── */
   var box  = document.getElementById('log');
@@ -206,20 +218,20 @@
   var warn = document.getElementById('warn');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var rows = jobs.map(function(j){
-    var dir = j[4];
+  var rows = jobs.map(function(j, i){
+    var dir = j[3];
     var el = document.createElement('div');
-    el.className = 'logline ' + j[3] + (dir ? ' has-detail' : '');
+    el.className = 'logline ' + (j[2] || '') + (dir ? ' has-detail' : '');
     el.innerHTML =
-      '<span class="lg-id">[' + j[0] + ']</span>' +
-      '<span class="lg-name">' + j[1] + '</span>' +
-      '<span class="lg-stat">' + j[2] + '</span>' +
+      '<span class="lg-id">[' + jobNo(j, i) + ']</span>' +
+      '<span class="lg-name">' + j[0] + '</span>' +
+      '<span class="lg-stat">' + j[1] + '</span>' +
       (dir ? '<span class="lg-open" aria-hidden="true">[더보기]</span>' : '');
     if (dir) {
       el.setAttribute('role','button');
       el.setAttribute('tabindex','0');
       el.setAttribute('aria-haspopup','dialog');
-      el.setAttribute('aria-label', j[1] + ' 자세히 보기');
+      el.setAttribute('aria-label', j[0] + ' 자세히 보기');
       el.addEventListener('click', function(){ openLayer(dir, el); });
       el.addEventListener('keydown', function(e){
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLayer(dir, el); }
