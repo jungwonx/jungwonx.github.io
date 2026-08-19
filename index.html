@@ -31,6 +31,7 @@
     display:flex; flex-direction:column; justify-content:center;
     padding:clamp(28px,6vw,64px) clamp(20px,5vw,48px);
   }
+  body.locked{overflow:hidden;}
   .wrap{width:100%; max-width:720px; margin:0 auto;}
   a{color:inherit;}
   :focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
@@ -61,6 +62,14 @@
   .logline.wait .lg-stat{color:var(--amber);}
   .logline.wait .lg-id{color:var(--amber);}
 
+  /* 클릭 가능한 잡 */
+  .logline.has-detail{cursor:pointer; padding:0 8px; margin:0 -8px; border-radius:3px; transition:background .15s ease;}
+  .logline.has-detail .lg-name{border-bottom:1px dotted #3E5A63;}
+  .logline.has-detail:hover, .logline.has-detail:focus-visible{background:rgba(79,209,176,.09);}
+  .logline.has-detail:hover .lg-name, .logline.has-detail:focus-visible .lg-name{color:var(--mint); border-bottom-color:var(--mint);}
+  .lg-open{flex:none; margin-left:auto; padding-left:16px; color:#3E5A63; transition:color .15s ease;}
+  .logline.has-detail:hover .lg-open, .logline.has-detail:focus-visible .lg-open{color:var(--mint);}
+
   .barline{margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-line); white-space:nowrap; opacity:0;}
   .barline.on{opacity:1; transition:opacity .35s ease;}
   .barline .bar{color:var(--amber);}
@@ -80,9 +89,60 @@
   .foot .note{font-size:13.5px; color:var(--muted); font-weight:300; margin:0;}
   .meta{margin-top:30px; padding-top:18px; border-top:1px solid var(--rule); font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--muted); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 
+  /* ── 상세 레이어 ───────────────────────────── */
+  .layer{position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:clamp(16px,4vw,40px);}
+  .layer[hidden]{display:none;}
+  .layer-bg{position:absolute; inset:0; background:rgba(14,24,29,.72); backdrop-filter:blur(3px); animation:fade .2s ease;}
+  .layer-panel{
+    position:relative; width:100%; max-width:760px; max-height:100%;
+    display:flex; flex-direction:column;
+    background:var(--panel); border:1px solid var(--panel-line); border-radius:6px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.6); overflow:hidden;
+    animation:rise .22s cubic-bezier(.2,.7,.3,1);
+  }
+  @keyframes fade{from{opacity:0;} to{opacity:1;}}
+  @keyframes rise{from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:none;}}
+
+  .layer-bar{display:flex; align-items:center; gap:10px; padding:11px 14px 11px 16px; background:var(--panel-2); border-bottom:1px solid var(--panel-line); font-family:var(--mono); font-size:11.5px; color:#7E939B; letter-spacing:.08em; flex:none;}
+  .layer-bar .grow{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .layer-x{flex:none; background:none; border:1px solid var(--panel-line); color:#8FA5AC; font-family:var(--mono); font-size:11px; letter-spacing:.08em; padding:5px 10px; border-radius:3px; cursor:pointer; transition:color .15s ease, border-color .15s ease;}
+  .layer-x:hover{color:var(--mint); border-color:var(--mint);}
+
+  .layer-body{padding:clamp(22px,4vw,34px) clamp(18px,4vw,34px) clamp(28px,5vw,40px); overflow-y:auto; color:#DCE6E8;}
+  .layer-status{font-family:var(--mono); font-size:11px; letter-spacing:.18em; color:var(--mint); margin:0 0 10px;}
+  .layer-body h2{font-size:clamp(21px,3.4vw,28px); line-height:1.35; font-weight:700; letter-spacing:-.03em; margin:0 0 14px; color:#F2F5F3;}
+  .tags{display:flex; flex-wrap:wrap; gap:7px; margin:0 0 24px; padding:0; list-style:none;}
+  .tags li{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:#8FA5AC; border:1px solid var(--panel-line); border-radius:99px; padding:3px 10px;}
+  .layer-body p{font-size:14.5px; font-weight:300; line-height:1.85; color:#B9C8CC; margin:0 0 18px;}
+  .layer-body p.lead{font-size:15.5px; color:#DCE6E8;}
+  .layer-body h3{font-size:12px; font-family:var(--mono); letter-spacing:.14em; color:var(--mint); margin:30px 0 12px; font-weight:500;}
+  .layer-body ul.points{margin:0 0 22px; padding:0; list-style:none;}
+  .layer-body ul.points li{position:relative; padding-left:18px; font-size:14px; font-weight:300; color:#B9C8CC; margin-bottom:7px;}
+  .layer-body ul.points li::before{content:"▸"; position:absolute; left:0; color:var(--mint); font-size:11px;}
+
+  figure{margin:0 0 22px;}
+  figure img{display:block; width:100%; height:auto; border-radius:4px; border:1px solid var(--panel-line); background:var(--panel-2);}
+  .ratio{position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; overflow:hidden; border:1px solid var(--panel-line); background:#000;}
+  .ratio iframe, .ratio video{position:absolute; inset:0; width:100%; height:100%; border:0; background:#000;}
+  figcaption{font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:#7E939B; margin-top:9px;}
+  .ph{display:grid; place-items:center; aspect-ratio:16/9; background:var(--panel-2); border:1px dashed var(--panel-line); border-radius:4px; font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:#5F757D; text-align:center; padding:12px; line-height:1.9;}
+
+  .layer-foot{margin-top:6px; padding-top:20px; border-top:1px solid var(--panel-line); display:flex; align-items:center; gap:14px 20px; flex-wrap:wrap;}
+  .layer-foot .btn{background:var(--mint); color:var(--panel); font-size:14px; padding:11px 22px;}
+  .layer-foot .btn:hover{background:#6BE0C3;}
+  .layer-foot small{font-family:var(--mono); font-size:11px; color:#7E939B; letter-spacing:.06em;}
+
+  /* 불러오는 중 / 실패 */
+  .state{font-family:var(--mono); font-size:12px; line-height:2.1; color:#8FA5AC; padding:8px 0 12px;}
+  .state .path{color:var(--mint);}
+  .state b{color:var(--amber); font-weight:500;}
+  .state .retry{margin-top:14px; background:none; border:1px solid var(--panel-line); color:#8FA5AC; font-family:var(--mono); font-size:11px; letter-spacing:.08em; padding:7px 14px; border-radius:3px; cursor:pointer;}
+  .state .retry:hover{color:var(--mint); border-color:var(--mint);}
+
   @media (prefers-reduced-motion:reduce){
     .logline,.barline,.warn{opacity:1 !important; transform:none !important; transition:none !important;}
     .cursor{animation:none;}
+    .layer-bg,.layer-panel{animation:none;}
   }
 </style>
 </head>
@@ -99,7 +159,7 @@
     조금만 기다려 주세요. 곧 제대로 만들어서 올리겠습니다.
   </p>
 
-  <div class="console" role="img" aria-label="솔브텍의 작업 대기열. 진행 중인 다섯 개 사업 아래에 홈페이지 제작 작업이 대기 상태로 밀려 있으며, 진행률은 14퍼센트입니다.">
+  <div class="console">
     <div class="console-bar"><span class="dot"></span> solvetech · job queue</div>
     <div class="console-body">
       <div class="cmd">$ solvetech status <b>--job homepage</b></div>
@@ -127,22 +187,47 @@
 
 </div>
 
+<!-- 상세 레이어 -->
+<div class="layer" id="layer" hidden>
+  <div class="layer-bg" data-close></div>
+  <div class="layer-panel" role="dialog" aria-modal="true" aria-labelledby="layer-title">
+    <div class="layer-bar">
+      <span class="dot"></span>
+      <span class="grow" id="layer-slug">solvetech · job</span>
+      <button type="button" class="layer-x" data-close>ESC 닫기</button>
+    </div>
+    <div class="layer-body" id="layer-body"></div>
+  </div>
+</div>
+
 <script>
 (function(){
+
+  /* ══════════════════════════════════════════════
+     설정 — 내용을 담아둔 폴더 (같은 저장소 기준)
+     저장소 구조
+       index.html
+       content/literacy.json      ← 글·이미지·영상 목록
+       assets/literacy/*.jpg|mp4  ← 실제 파일
+     ══════════════════════════════════════════════ */
+  var CONTENT_DIR = 'content/';
+
+  /* 대기열 — 맨 뒤 칸이 상세 키(content/키.json)입니다 */
   var jobs = [
-    ["JOB 001","2020년 한국신용정보원 - 기술신용평가 시스템","END",""],
-    ["JOB 002","2021년 한국신용정보원 - 기술신용평가 시스템","END",""],
-    ["JOB 003","2022년 한국신용정보원 - 기술신용평가 시스템","END",""],
-    ["JOB 004","2023년 한국신용정보원 - 기술신용평가 시스템","END",""],
-    ["JOB 005","2025년 한국신용정보원 - 기술신용평가 차세대","END",""],
-    ["JOB 006","2025년 한국신용정보원 - 기술신용평가 - 이행실태조사","END",""],
-    ["JOB 007","2026년 한국신용정보원 - 기술신용평가 - 소상공인 성장모형","RUNNING",""],
-    ["JOB 008","2026년 한국신용정보원 - 기술신용평가 - 기술력 성장모형","RUNNING",""],
-    ["JOB 009","홀덤 RFID카드 방송 솔루션","RUNNING",""],
-    ["JOB 010","디지털 문해 프로그램","RUNNING",""],
-    ["JOB 999","홈페이지 제작","PENDING","wait"]
+    ["JOB 001","2020년 한국신용정보원 - 기술신용평가 시스템","END","",""],
+    ["JOB 002","2021년 한국신용정보원 - 기술신용평가 시스템","END","",""],
+    ["JOB 003","2022년 한국신용정보원 - 기술신용평가 시스템","END","",""],
+    ["JOB 004","2023년 한국신용정보원 - 기술신용평가 시스템","END","",""],
+    ["JOB 005","2025년 한국신용정보원 - 기술신용평가 차세대","END","",""],
+    ["JOB 006","2025년 한국신용정보원 - 기술신용평가 - 이행실태조사","END","",""],
+    ["JOB 007","2026년 한국신용정보원 - 기술신용평가 - 소상공인 성장모형","RUNNING","",""],
+    ["JOB 008","2026년 한국신용정보원 - 기술신용평가 - 기술력 성장모형","RUNNING","",""],
+    ["JOB 009","홀덤 RFID카드 방송 솔루션","RUNNING","",""],
+    ["JOB 010","디지털 문해 프로그램","RUNNING","","literacy"],
+    ["JOB 999","홈페이지 제작","PENDING","wait",""]
   ];
 
+  /* ── 대기열 렌더 ── */
   var box  = document.getElementById('log');
   var barL = document.getElementById('barline');
   var bar  = document.getElementById('bar');
@@ -151,12 +236,24 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var rows = jobs.map(function(j){
+    var key = j[4];
     var el = document.createElement('div');
-    el.className = 'logline ' + j[3];
+    el.className = 'logline ' + j[3] + (key ? ' has-detail' : '');
     el.innerHTML =
       '<span class="lg-id">[' + j[0] + ']</span>' +
       '<span class="lg-name">' + j[1] + '</span>' +
-      '<span class="lg-stat">' + j[2] + '</span>';
+      '<span class="lg-stat">' + j[2] + '</span>' +
+      (key ? '<span class="lg-open" aria-hidden="true">[더보기]</span>' : '');
+    if (key) {
+      el.setAttribute('role','button');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('aria-haspopup','dialog');
+      el.setAttribute('aria-label', j[1] + ' 자세히 보기');
+      el.addEventListener('click', function(){ openLayer(key, el); });
+      el.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLayer(key, el); }
+      });
+    }
     box.appendChild(el);
     return el;
   });
@@ -171,26 +268,132 @@
   if (reduce) {
     rows.forEach(function(el){ el.classList.add('on'); });
     draw(TARGET); barL.classList.add('on'); warn.classList.add('on');
-    return;
+  } else {
+    draw(0);
+    rows.forEach(function(el, i){
+      setTimeout(function(){ el.classList.add('on'); }, 350 + i * 300);
+    });
+    var start = 350 + rows.length * 300 + 200;
+    setTimeout(function(){
+      barL.classList.add('on');
+      var p = 0;
+      var t = setInterval(function(){
+        p++; draw(p);
+        if (p >= TARGET) { clearInterval(t); setTimeout(function(){ warn.classList.add('on'); }, 500); }
+      }, 55);
+    }, start);
   }
 
-  draw(0);
-  rows.forEach(function(el, i){
-    setTimeout(function(){ el.classList.add('on'); }, 350 + i * 300);
-  });
+  /* ── 레이어 ── */
+  var layer  = document.getElementById('layer');
+  var lSlug  = document.getElementById('layer-slug');
+  var lBody  = document.getElementById('layer-body');
+  var lClose = layer.querySelector('.layer-x');
+  var opener = null;
+  var cache  = {};
 
-  var start = 350 + rows.length * 300 + 200;
-  setTimeout(function(){
-    barL.classList.add('on');
-    var p = 0;
-    var t = setInterval(function(){
-      p++; draw(p);
-      if (p >= TARGET) {
-        clearInterval(t);
-        setTimeout(function(){ warn.classList.add('on'); }, 500);
+  function ytId(url){
+    var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{6,})/);
+    return m ? m[1] : null;
+  }
+
+  function media(b){
+    var cap = b.caption ? '<figcaption>' + b.caption + '</figcaption>' : '';
+    if (b.type === 'image') {
+      var img = b.src
+        ? '<img src="' + b.src + '" alt="' + (b.alt || '') + '" loading="lazy">'
+        : '<div class="ph">IMAGE · 경로가 비어 있습니다</div>';
+      return '<figure>' + img + cap + '</figure>';
+    }
+    if (b.type === 'video') {
+      var vid;
+      if (!b.src) {
+        vid = '<div class="ph">VIDEO · 경로가 비어 있습니다</div>';
+      } else {
+        var id = ytId(b.src);
+        vid = '<div class="ratio">' + (id
+          ? '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '" title="' + (b.caption || '영상') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+          : '<video controls playsinline preload="metadata"' + (b.poster ? ' poster="' + b.poster + '"' : '') + '><source src="' + b.src + '"></video>')
+          + '</div>';
       }
-    }, 55);
-  }, start);
+      return '<figure>' + vid + cap + '</figure>';
+    }
+    return '';
+  }
+
+  function render(d){
+    var html = '';
+    if (d.status) html += '<p class="layer-status">' + d.status + '</p>';
+    html += '<h2 id="layer-title">' + (d.title || '') + '</h2>';
+    if (d.tags && d.tags.length) {
+      html += '<ul class="tags">' + d.tags.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    }
+    (d.blocks || []).forEach(function(b){
+      if (b.type === 'text') {
+        html += '<p' + (b.lead ? ' class="lead"' : '') + '>' + b.value + '</p>';
+      } else if (b.type === 'list') {
+        if (b.title) html += '<h3>' + b.title + '</h3>';
+        html += '<ul class="points">' + (b.items || []).map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>';
+      } else {
+        html += media(b);
+      }
+    });
+    if (d.cta) {
+      html += '<div class="layer-foot"><a class="btn" href="' + d.cta.href + '">' + d.cta.label + '</a>'
+            + (d.cta.note ? '<small>' + d.cta.note + '</small>' : '') + '</div>';
+    }
+    return html;
+  }
+
+  function openLayer(key, from){
+    if (from) opener = from;
+    lSlug.textContent = 'solvetech · ' + CONTENT_DIR + key + '.json';
+    layer.hidden = false;
+    document.body.classList.add('locked');
+    lBody.scrollTop = 0;
+    lClose.focus();
+
+    if (cache[key]) { lBody.innerHTML = render(cache[key]); return; }
+
+    lBody.innerHTML =
+      '<p class="state">$ fetch <span class="path">' + CONTENT_DIR + key + '.json</span>' +
+      '<span class="cursor"></span></p>';
+
+    fetch(CONTENT_DIR + key + '.json', {cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(d){ cache[key] = d; if(!layer.hidden) lBody.innerHTML = render(d); })
+      .catch(function(err){
+        if (layer.hidden) return;
+        lBody.innerHTML =
+          '<div class="state"><b>ERROR</b> 내용을 불러오지 못했습니다.<br>' +
+          '경로 <span class="path">' + CONTENT_DIR + key + '.json</span> 을 확인해 주세요.<br>' +
+          '(' + err.message + ')<br>' +
+          '<button type="button" class="retry">다시 시도</button></div>';
+        lBody.querySelector('.retry').addEventListener('click', function(){ openLayer(key); });
+      });
+  }
+
+  function closeLayer(){
+    if (layer.hidden) return;
+    layer.hidden = true;
+    lBody.innerHTML = '';           // 영상 재생 정지
+    document.body.classList.remove('locked');
+    if (opener) { opener.focus(); opener = null; }
+  }
+
+  layer.addEventListener('click', function(e){
+    if (e.target.hasAttribute('data-close')) closeLayer();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeLayer();
+    if (e.key === 'Tab' && !layer.hidden) {
+      var f = layer.querySelectorAll('button, a[href], iframe, video, [tabindex]:not([tabindex="-1"])');
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
 })();
 </script>
 </body>
