@@ -3,40 +3,85 @@
 ## 저장소 구조
 
 ```
-index.html
-content/
-  literacy.json          디지털 문해 프로그램 상세 내용
-assets/
-  literacy/
+index.html              대기열이 있는 메인 페이지
+detail.css              상세 내용 공통 스타일
+literacy/
+  index.html            디지털 문해 프로그램 내용
+  assets/
     01-class.jpg
     02-kiosk.jpg
+    03-guide.jpg
     intro.mp4
     intro-poster.jpg
 ```
 
-대기열의 `[JOB 010] 디지털 문해 프로그램` 을 클릭하면 `content/literacy.json` 을
-불러와 레이어에 그립니다. **HTML은 건드릴 필요 없이 JSON과 파일만 바꾸면 됩니다.**
+대기열의 `[JOB 010] 디지털 문해 프로그램` 을 클릭하면 `literacy/index.html` 을
+불러와 팝업에 띄웁니다. 같은 파일을 주소로 직접 열어도 (`.../literacy/`)
+정상적인 페이지로 보입니다. 나중에 상세 페이지로 그대로 쓰시면 됩니다.
 
 ## 내용 바꾸기
 
-`content/literacy.json` 의 `blocks` 배열에 원하는 순서대로 쌓습니다.
+`literacy/index.html` 의 `<article class="detail">` 안쪽만 고치면 됩니다.
+팝업은 이 `article` 안쪽만 뽑아 쓰기 때문에, 바깥의 `<head>` 나 `<body>` 는
+직접 접속할 때만 쓰입니다.
 
-| 블록 | 쓰는 법 |
-|---|---|
-| 문단 | `{"type":"text","value":"내용","lead":true}` — `lead`는 첫 문단 강조 |
-| 목록 | `{"type":"list","title":"소제목","items":["항목1","항목2"]}` |
-| 이미지 | `{"type":"image","src":"assets/literacy/01.jpg","alt":"설명","caption":"캡션"}` |
-| 영상(파일) | `{"type":"video","src":"assets/literacy/intro.mp4","poster":"assets/literacy/intro-poster.jpg"}` |
-| 영상(유튜브) | `{"type":"video","src":"https://youtu.be/영상ID","caption":"캡션"}` |
+쓸 수 있는 조각들:
 
-- 경로는 `index.html` 기준 상대경로입니다. `assets/...` 형태로 적으면 됩니다.
-- 유튜브는 주소만 넣으면 자동으로 embed 로 바뀝니다.
-- `value` 안에 `<b>`, `<br>` 같은 간단한 태그를 써도 그대로 반영됩니다.
+```html
+<!-- 글은 읽기 좋은 폭까지만 -->
+<div class="col">
+  <p class="status">RUNNING · 2026</p>
+  <h2>제목</h2>
+  <ul class="tags"><li>태그</li></ul>
+  <p class="lead">첫 문단</p>
+  <p>본문</p>
+  <h3>소제목</h3>
+  <ul class="points"><li>항목</li></ul>
+</div>
+
+<!-- 사진은 col 밖에 두면 넓게 나옵니다 -->
+<figure>
+  <img src="assets/01-class.jpg" alt="설명" loading="lazy">
+  <figcaption>캡션</figcaption>
+</figure>
+
+<!-- 사진 두 장 나란히 -->
+<div class="grid2">
+  <figure>...</figure>
+  <figure>...</figure>
+</div>
+
+<!-- 영상 (파일) -->
+<figure>
+  <div class="ratio">
+    <video controls playsinline preload="metadata" poster="assets/intro-poster.jpg">
+      <source src="assets/intro.mp4" type="video/mp4">
+    </video>
+  </div>
+  <figcaption>캡션</figcaption>
+</figure>
+
+<!-- 영상 (유튜브) -->
+<div class="ratio">
+  <iframe src="https://www.youtube-nocookie.com/embed/영상ID"
+          title="소개 영상" allowfullscreen></iframe>
+</div>
+
+<!-- 문의 버튼 -->
+<div class="cta">
+  <a href="mailto:securecasino@gmail.com">문의하기</a>
+  <small>보통 하루 안에 회신드립니다.</small>
+</div>
+```
+
+이미지 경로는 **그 폴더 기준**으로 적으면 됩니다 (`assets/01.jpg`).
+팝업으로 불러올 때 자동으로 `literacy/assets/01.jpg` 로 고쳐집니다.
 
 ## 다른 사업도 열고 싶을 때
 
-1. `content/holdem.json` 처럼 파일을 하나 더 만듭니다.
-2. `index.html` 의 `jobs` 배열에서 해당 줄 맨 뒤 칸에 키를 적습니다.
+1. 폴더를 만들고 `literacy/index.html` 을 복사해 내용을 바꿉니다.
+   예: `holdem/index.html`
+2. `index.html` 의 `jobs` 배열에서 해당 줄 맨 뒤 칸에 폴더 이름을 적습니다.
 
 ```js
 ["JOB 009","홀덤 RFID카드 방송 솔루션","RUNNING","","holdem"],
@@ -46,7 +91,7 @@ assets/
 
 ## 확인 방법
 
-`index.html` 을 더블클릭해서 열면 브라우저 보안 정책 때문에 JSON을 못 읽습니다.
+`index.html` 을 더블클릭해서 열면 브라우저 보안 정책 때문에 다른 파일을 못 읽습니다.
 아래 중 하나로 확인하세요.
 
 - GitHub Pages 에 올린 주소로 접속 (실제 운영 환경)
