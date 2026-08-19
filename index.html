@@ -9,21 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="detail.css">
 <style>
-  :root{
-    --paper:#EDEFEC;
-    --ink:#14181A;
-    --muted:#5C666A;
-    --rule:#D3D8D2;
-    --panel:#0E181D;
-    --panel-2:#16242B;
-    --panel-line:#24373F;
-    --mint:#4FD1B0;
-    --amber:#E39B2E;
-    --accent:#0E6B5B;
-    --sans:'IBM Plex Sans KR', system-ui, -apple-system, sans-serif;
-    --mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
-  }
   *{box-sizing:border-box;}
   body{
     margin:0; min-height:100vh; background:var(--paper); color:var(--ink);
@@ -89,12 +76,12 @@
   .foot .note{font-size:13.5px; color:var(--muted); font-weight:300; margin:0;}
   .meta{margin-top:30px; padding-top:18px; border-top:1px solid var(--rule); font-family:var(--mono); font-size:11px; letter-spacing:.1em; color:var(--muted); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;}
 
-  /* ── 상세 레이어 ───────────────────────────── */
+  /* ── 상세 레이어 (틀만. 내용 스타일은 detail.css) ── */
   .layer{position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:clamp(16px,4vw,40px);}
   .layer[hidden]{display:none;}
   .layer-bg{position:absolute; inset:0; background:rgba(14,24,29,.72); backdrop-filter:blur(3px); animation:fade .2s ease;}
   .layer-panel{
-    position:relative; width:100%; max-width:760px; max-height:100%;
+    position:relative; width:100%; max-width:1040px; max-height:100%;
     display:flex; flex-direction:column;
     background:var(--panel); border:1px solid var(--panel-line); border-radius:6px;
     box-shadow:0 40px 80px -30px rgba(0,0,0,.6); overflow:hidden;
@@ -105,32 +92,12 @@
 
   .layer-bar{display:flex; align-items:center; gap:10px; padding:11px 14px 11px 16px; background:var(--panel-2); border-bottom:1px solid var(--panel-line); font-family:var(--mono); font-size:11.5px; color:#7E939B; letter-spacing:.08em; flex:none;}
   .layer-bar .grow{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .layer-open{flex:none; color:#7E939B; text-decoration:none; border:1px solid var(--panel-line); font-size:11px; letter-spacing:.08em; padding:5px 10px; border-radius:3px; transition:color .15s ease, border-color .15s ease;}
+  .layer-open:hover{color:var(--mint); border-color:var(--mint);}
   .layer-x{flex:none; background:none; border:1px solid var(--panel-line); color:#8FA5AC; font-family:var(--mono); font-size:11px; letter-spacing:.08em; padding:5px 10px; border-radius:3px; cursor:pointer; transition:color .15s ease, border-color .15s ease;}
   .layer-x:hover{color:var(--mint); border-color:var(--mint);}
 
-  .layer-body{padding:clamp(22px,4vw,34px) clamp(18px,4vw,34px) clamp(28px,5vw,40px); overflow-y:auto; color:#DCE6E8;}
-  .layer-status{font-family:var(--mono); font-size:11px; letter-spacing:.18em; color:var(--mint); margin:0 0 10px;}
-  .layer-body h2{font-size:clamp(21px,3.4vw,28px); line-height:1.35; font-weight:700; letter-spacing:-.03em; margin:0 0 14px; color:#F2F5F3;}
-  .tags{display:flex; flex-wrap:wrap; gap:7px; margin:0 0 24px; padding:0; list-style:none;}
-  .tags li{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; color:#8FA5AC; border:1px solid var(--panel-line); border-radius:99px; padding:3px 10px;}
-  .layer-body p{font-size:14.5px; font-weight:300; line-height:1.85; color:#B9C8CC; margin:0 0 18px;}
-  .layer-body p.lead{font-size:15.5px; color:#DCE6E8;}
-  .layer-body h3{font-size:12px; font-family:var(--mono); letter-spacing:.14em; color:var(--mint); margin:30px 0 12px; font-weight:500;}
-  .layer-body ul.points{margin:0 0 22px; padding:0; list-style:none;}
-  .layer-body ul.points li{position:relative; padding-left:18px; font-size:14px; font-weight:300; color:#B9C8CC; margin-bottom:7px;}
-  .layer-body ul.points li::before{content:"▸"; position:absolute; left:0; color:var(--mint); font-size:11px;}
-
-  figure{margin:0 0 22px;}
-  figure img{display:block; width:100%; height:auto; border-radius:4px; border:1px solid var(--panel-line); background:var(--panel-2);}
-  .ratio{position:relative; width:100%; aspect-ratio:16/9; border-radius:4px; overflow:hidden; border:1px solid var(--panel-line); background:#000;}
-  .ratio iframe, .ratio video{position:absolute; inset:0; width:100%; height:100%; border:0; background:#000;}
-  figcaption{font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:#7E939B; margin-top:9px;}
-  .ph{display:grid; place-items:center; aspect-ratio:16/9; background:var(--panel-2); border:1px dashed var(--panel-line); border-radius:4px; font-family:var(--mono); font-size:11px; letter-spacing:.12em; color:#5F757D; text-align:center; padding:12px; line-height:1.9;}
-
-  .layer-foot{margin-top:6px; padding-top:20px; border-top:1px solid var(--panel-line); display:flex; align-items:center; gap:14px 20px; flex-wrap:wrap;}
-  .layer-foot .btn{background:var(--mint); color:var(--panel); font-size:14px; padding:11px 22px;}
-  .layer-foot .btn:hover{background:#6BE0C3;}
-  .layer-foot small{font-family:var(--mono); font-size:11px; color:#7E939B; letter-spacing:.06em;}
+  .layer-body{padding:clamp(22px,4vw,40px) clamp(18px,4vw,48px) clamp(28px,5vw,48px); overflow-y:auto;}
 
   /* 불러오는 중 / 실패 */
   .state{font-family:var(--mono); font-size:12px; line-height:2.1; color:#8FA5AC; padding:8px 0 12px;}
@@ -194,6 +161,7 @@
     <div class="layer-bar">
       <span class="dot"></span>
       <span class="grow" id="layer-slug">solvetech · job</span>
+      <a class="layer-open" id="layer-open" href="#" target="_blank" rel="noopener">새 창</a>
       <button type="button" class="layer-x" data-close>ESC 닫기</button>
     </div>
     <div class="layer-body" id="layer-body"></div>
@@ -204,15 +172,18 @@
 (function(){
 
   /* ══════════════════════════════════════════════
-     설정 — 내용을 담아둔 폴더 (같은 저장소 기준)
+     대기열. 맨 뒤 칸에 폴더 이름을 적으면
+     그 폴더의 index.html 을 불러와 팝업에 띄웁니다.
+
+       literacy  →  literacy/index.html
+
      저장소 구조
        index.html
-       content/literacy.json      ← 글·이미지·영상 목록
-       assets/literacy/*.jpg|mp4  ← 실제 파일
+       detail.css
+       literacy/
+         index.html          ← 팝업에 뜨는 내용
+         assets/*.jpg, *.mp4
      ══════════════════════════════════════════════ */
-  var CONTENT_DIR = 'content/';
-
-  /* 대기열 — 맨 뒤 칸이 상세 키(content/키.json)입니다 */
   var jobs = [
     ["JOB 001","2020년 한국신용정보원 - 기술신용평가 시스템","END","",""],
     ["JOB 002","2021년 한국신용정보원 - 기술신용평가 시스템","END","",""],
@@ -236,22 +207,22 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var rows = jobs.map(function(j){
-    var key = j[4];
+    var dir = j[4];
     var el = document.createElement('div');
-    el.className = 'logline ' + j[3] + (key ? ' has-detail' : '');
+    el.className = 'logline ' + j[3] + (dir ? ' has-detail' : '');
     el.innerHTML =
       '<span class="lg-id">[' + j[0] + ']</span>' +
       '<span class="lg-name">' + j[1] + '</span>' +
       '<span class="lg-stat">' + j[2] + '</span>' +
-      (key ? '<span class="lg-open" aria-hidden="true">[더보기]</span>' : '');
-    if (key) {
+      (dir ? '<span class="lg-open" aria-hidden="true">[더보기]</span>' : '');
+    if (dir) {
       el.setAttribute('role','button');
       el.setAttribute('tabindex','0');
       el.setAttribute('aria-haspopup','dialog');
       el.setAttribute('aria-label', j[1] + ' 자세히 보기');
-      el.addEventListener('click', function(){ openLayer(key, el); });
+      el.addEventListener('click', function(){ openLayer(dir, el); });
       el.addEventListener('keydown', function(e){
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLayer(key, el); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLayer(dir, el); }
       });
     }
     box.appendChild(el);
@@ -287,89 +258,59 @@
   /* ── 레이어 ── */
   var layer  = document.getElementById('layer');
   var lSlug  = document.getElementById('layer-slug');
+  var lOpen  = document.getElementById('layer-open');
   var lBody  = document.getElementById('layer-body');
   var lClose = layer.querySelector('.layer-x');
   var opener = null;
   var cache  = {};
 
-  function ytId(url){
-    var m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{6,})/);
-    return m ? m[1] : null;
-  }
-
-  function media(b){
-    var cap = b.caption ? '<figcaption>' + b.caption + '</figcaption>' : '';
-    if (b.type === 'image') {
-      var img = b.src
-        ? '<img src="' + b.src + '" alt="' + (b.alt || '') + '" loading="lazy">'
-        : '<div class="ph">IMAGE · 경로가 비어 있습니다</div>';
-      return '<figure>' + img + cap + '</figure>';
-    }
-    if (b.type === 'video') {
-      var vid;
-      if (!b.src) {
-        vid = '<div class="ph">VIDEO · 경로가 비어 있습니다</div>';
-      } else {
-        var id = ytId(b.src);
-        vid = '<div class="ratio">' + (id
-          ? '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '" title="' + (b.caption || '영상') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-          : '<video controls playsinline preload="metadata"' + (b.poster ? ' poster="' + b.poster + '"' : '') + '><source src="' + b.src + '"></video>')
-          + '</div>';
-      }
-      return '<figure>' + vid + cap + '</figure>';
-    }
-    return '';
-  }
-
-  function render(d){
-    var html = '';
-    if (d.status) html += '<p class="layer-status">' + d.status + '</p>';
-    html += '<h2 id="layer-title">' + (d.title || '') + '</h2>';
-    if (d.tags && d.tags.length) {
-      html += '<ul class="tags">' + d.tags.map(function(t){ return '<li>' + t + '</li>'; }).join('') + '</ul>';
-    }
-    (d.blocks || []).forEach(function(b){
-      if (b.type === 'text') {
-        html += '<p' + (b.lead ? ' class="lead"' : '') + '>' + b.value + '</p>';
-      } else if (b.type === 'list') {
-        if (b.title) html += '<h3>' + b.title + '</h3>';
-        html += '<ul class="points">' + (b.items || []).map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>';
-      } else {
-        html += media(b);
-      }
+  /* 불러온 페이지 안의 상대경로를 그 폴더 기준으로 고쳐줍니다.
+     literacy/index.html 의 assets/01.jpg → literacy/assets/01.jpg */
+  function fixPaths(root, base){
+    root.querySelectorAll('[src],[href],[poster]').forEach(function(el){
+      ['src','href','poster'].forEach(function(attr){
+        var v = el.getAttribute(attr);
+        if (!v) return;
+        if (/^(https?:|mailto:|tel:|data:|blob:|#|\/\/|\/)/i.test(v)) return;
+        try { el.setAttribute(attr, new URL(v, base).href); } catch(e){}
+      });
     });
-    if (d.cta) {
-      html += '<div class="layer-foot"><a class="btn" href="' + d.cta.href + '">' + d.cta.label + '</a>'
-            + (d.cta.note ? '<small>' + d.cta.note + '</small>' : '') + '</div>';
-    }
-    return html;
   }
 
-  function openLayer(key, from){
+  function openLayer(dir, from){
     if (from) opener = from;
-    lSlug.textContent = 'solvetech · ' + CONTENT_DIR + key + '.json';
+    var path = dir + '/index.html';
+    lSlug.textContent = 'solvetech · ' + path;
+    lOpen.href = dir + '/';
     layer.hidden = false;
     document.body.classList.add('locked');
     lBody.scrollTop = 0;
     lClose.focus();
 
-    if (cache[key]) { lBody.innerHTML = render(cache[key]); return; }
+    if (cache[dir]) { lBody.innerHTML = cache[dir]; return; }
 
     lBody.innerHTML =
-      '<p class="state">$ fetch <span class="path">' + CONTENT_DIR + key + '.json</span>' +
-      '<span class="cursor"></span></p>';
+      '<p class="state">$ load <span class="path">' + path + '</span><span class="cursor"></span></p>';
 
-    fetch(CONTENT_DIR + key + '.json', {cache:'no-cache'})
-      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(d){ cache[key] = d; if(!layer.hidden) lBody.innerHTML = render(d); })
+    fetch(path, {cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function(html){
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var node = doc.querySelector('.detail') || doc.body;
+        fixPaths(node, new URL(path, location.href));
+        var h2 = node.querySelector('h2');
+        if (h2) h2.id = 'layer-title';
+        cache[dir] = node.outerHTML;
+        if (!layer.hidden) lBody.innerHTML = cache[dir];
+      })
       .catch(function(err){
         if (layer.hidden) return;
         lBody.innerHTML =
           '<div class="state"><b>ERROR</b> 내용을 불러오지 못했습니다.<br>' +
-          '경로 <span class="path">' + CONTENT_DIR + key + '.json</span> 을 확인해 주세요.<br>' +
+          '경로 <span class="path">' + path + '</span> 을 확인해 주세요.<br>' +
           '(' + err.message + ')<br>' +
           '<button type="button" class="retry">다시 시도</button></div>';
-        lBody.querySelector('.retry').addEventListener('click', function(){ openLayer(key); });
+        lBody.querySelector('.retry').addEventListener('click', function(){ openLayer(dir); });
       });
   }
 
